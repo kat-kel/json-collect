@@ -2,7 +2,7 @@
 This tool exports a JSON file from an API's response (`export-response`) and/or exports a CSV listing all the URLs in the returned data (`export-urls`). The latter command depends on instructions in the file `navigate_json.py`, which navigate the JSON's various keys and extract an array of the desired data, i.e. URLs.
 
 ```python
-article.get("parent", {}).get("child", {}).get("url", {}) for entry in data.get("data")]
+[article.get("parent", {}).get("child", {}).get("url", {}) for entry in data.get("data")]
 ```
 
 ```json
