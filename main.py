@@ -4,9 +4,8 @@ import time
 
 import click
 import requests
-import ural
 
-from navigate_json import json_path
+from navigate_json import navigate_json
 
 yellow = "\033[1;33m"
 green = "\033[0;32m"
@@ -43,29 +42,25 @@ def cli(ctx, data_source):
 @cli.command()
 @click.option("--outfile", default="export.json")
 @click.pass_obj
-def export_response(source, outfile):
+def export_json(source, outfile):
     data = source.load_data()
     with open(outfile, "w") as f:
         json.dump(data, f, indent=4)
 
 
 @cli.command()
-@click.option("--outfile", default="urls.csv")
-@click.option("--verify/--no-verify", is_flag=True, default=True)
+@click.option("--outfile", default="export.csv")
 @click.pass_obj
-def export_urls(source, outfile, verify):
+def export_csv(source, outfile):
     data = source.load_data()
 
     # Modify the array created with json_path() as the JSON data structure changes.
-    urls = [url.replace(" ","") for url in json_path(data) if url]
-
-    if verify:
-        urls = [url for url in urls if ural.is_url(url)]
+    rows = navigate_json(data)
 
     with open(outfile, "w") as f:
-        writer = csv.writer(f)
-        for url in urls:
-            writer.writerow([url])
+        writer = csv.DictWriter(f, fieldnames=["id", "themes", "tags", "datePublished", "url", "ratingValue", "rating_alternateName"])
+        writer.writeheader()
+        writer.writerows(rows)
 
 
 if __name__ == "__main__":
